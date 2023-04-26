@@ -1,3 +1,4 @@
+import { TimelineMessage } from "../entities";
 import { MessageRepository } from "../repositories/message.repository";
 import { DateProvider } from "./post-message.use-case";
 
@@ -11,7 +12,7 @@ export class ViewUserMessagesTimelineUseCase {
     private messageRepository: MessageRepository
   ) {}
 
-  async execute(authorName: string) {
+  async execute(authorName: string): Promise<TimelineMessage[]> {
     const allMessages = await this.messageRepository.getAllMessagesOfUser(
       authorName
     );

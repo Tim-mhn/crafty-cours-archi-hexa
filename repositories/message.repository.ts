@@ -1,4 +1,4 @@
-import { Message } from "../use-cases/post-message.use-case";
+import { Message } from "../entities";
 
 export interface MessageRepository {
   saveMessage(message: Message): Promise<void>;

@@ -1,5 +1,5 @@
+import { Message, TimelineMessage } from "../entities";
 import { InMemoryMessageRepository } from "../repositories/message.in-memory.repository";
-import { Message } from "../use-cases/post-message.use-case";
 import { ViewUserMessagesTimelineUseCase } from "../use-cases/view-user-messages-timeline.use-case";
 
 describe("View Messages Timeline", () => {
@@ -117,7 +117,7 @@ describe("View Messages Timeline", () => {
 class TestFixture {
   now: Date;
 
-  timelineMessages: { text: string; publishedAgo: string; id: string }[];
+  timelineMessages: TimelineMessage[];
 
   inMemoryMessagesRepository = new InMemoryMessageRepository();
 

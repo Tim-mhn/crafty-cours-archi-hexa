@@ -1,4 +1,4 @@
-import { Message } from "../use-cases/post-message.use-case";
+import { Message } from "../entities";
 import { MessageRepository } from "./message.repository";
 
 export class InMemoryMessageRepository implements MessageRepository {

@@ -1,11 +1,6 @@
+import { Message } from "../entities";
 import { MessageRepository } from "../repositories/message.repository";
 
-export type Message = {
-  id: string;
-  text: string;
-  author: string;
-  publishedAt: Date;
-};
 export type PostMessageCommand = { id: string; text: string; author: string };
 export class MessageTooLong extends Error {}
 export class EmptyMessageForbidden extends Error {}
@@ -13,7 +8,6 @@ export class EmptyMessageForbidden extends Error {}
 export interface DateProvider {
   getCurrentDate(): Date;
 }
-
 
 const MESSAGE_MAX_LENGTH = 200;
 export class PostMessageUseCase {

@@ -1,8 +1,8 @@
+import { Message } from "../entities";
 import { InMemoryMessageRepository } from "../repositories/message.in-memory.repository";
 import {
   DateProvider,
   EmptyMessageForbidden,
-  Message,
   MessageTooLong,
   PostMessageCommand,
   PostMessageUseCase,
