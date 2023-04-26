@@ -1,3 +1,5 @@
+import { MessageRepository } from "../repositories/message.repository";
+
 export type Message = {
   id: string;
   text: string;
@@ -11,9 +13,7 @@ export class EmptyMessageForbidden extends Error {}
 export interface DateProvider {
   getCurrentDate(): Date;
 }
-export interface MessageRepository {
-  saveMessage(message: Message): Promise<void>;
-}
+
 
 const MESSAGE_MAX_LENGTH = 200;
 export class PostMessageUseCase {

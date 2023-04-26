@@ -3,11 +3,10 @@ import {
   DateProvider,
   EmptyMessageForbidden,
   Message,
-  MessageRepository,
   MessageTooLong,
   PostMessageCommand,
   PostMessageUseCase,
-} from "../post-message.use-case";
+} from "../use-cases/post-message.use-case";
 
 describe("Feature: posting a message", () => {
   let testFixture: ReturnType<typeof createTestFixture>;
@@ -103,7 +102,9 @@ const createTestFixture = () => {
       expect(thrownError).toBeInstanceOf(errorClass);
     },
     thenPostedMessageShouldBe: (expectedMessage: Message) => {
-      expect(messageRepo.message).toEqual(expectedMessage);
+      expect(messageRepo.getMessageById(expectedMessage.id)).toEqual(
+        expectedMessage
+      );
     },
     givenNowIs: (date: Date) => {
       stubDateProvider.now = date;
