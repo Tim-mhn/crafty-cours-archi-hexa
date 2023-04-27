@@ -64,9 +64,12 @@ class EditMessageTestFixture {
   }
 
   async thenMessageShouldBe(expectedMessage: { id: string; text: string }) {
-    const { id, text: messageText } =
-      await this.messageRepository.getMessageById(expectedMessage.id);
-    expect({ id, text: messageText.value }).toEqual(expectedMessage);
+    const message = await this.messageRepository.getMessageById(
+      expectedMessage.id
+    );
+    const id = message.id;
+    const text = message.text;
+    expect({ id, text }).toEqual(expectedMessage);
   }
 
   errorThrown: Error;

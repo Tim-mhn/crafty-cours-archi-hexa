@@ -1,4 +1,3 @@
-import { MessageText } from "../models/message-text";
 import { MessageRepository } from "../repositories/message.repository";
 
 export type EditMessageCommand = {
@@ -9,7 +8,7 @@ export class EditMessageUseCase {
   constructor(private messageRepository: MessageRepository) {}
   async handle({ messageId, text }: EditMessageCommand) {
     const message = await this.messageRepository.getMessageById(messageId);
-    message.text = MessageText.of(text);
+    message.editText(text);
     await this.messageRepository.saveMessage(message);
   }
 }

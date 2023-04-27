@@ -1,1 +1,1 @@
-[]
+[{"id":"message-1","author":"alice","text":"hello","publishedAt":"2020-04-01T23:00:00.000Z"},{"id":"message-2","author":"bob","text":"hey !","publishedAt":"2020-04-01T23:00:00.000Z"}]

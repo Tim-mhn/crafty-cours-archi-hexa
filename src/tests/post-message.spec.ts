@@ -3,7 +3,6 @@ import {
   EmptyMessageForbidden,
   MessageTooLong,
 } from "../errors/post-message.errors";
-import { MessageText } from "../models/message-text";
 import { InMemoryMessageRepository } from "../repositories/message.in-memory.repository";
 import {
   DateProvider,
@@ -28,12 +27,14 @@ describe("Feature: posting a message", () => {
       };
       await testFixture.whenUserPostsMessage(postMessageCommand);
 
-      await testFixture.thenPostedMessageShouldBe({
-        id: "message-id",
-        text: "Hello",
-        author: "alice",
-        publishedAt: new Date("2023-01-19T18:00:00.000Z"),
-      });
+      await testFixture.thenPostedMessageShouldBe(
+        Message.fromProps({
+          id: "message-id",
+          text: "Hello",
+          author: "alice",
+          publishedAt: new Date("2023-01-19T18:00:00.000Z"),
+        })
+      );
     });
 
     it("Alice cannot post a message that is strictly more than 200 characters", async () => {
@@ -112,12 +113,12 @@ const createTestFixture = () => {
       _expectedMessage: Omit<Message, "text"> & { text: string }
     ) => {
       const { author, id, publishedAt, text } = _expectedMessage;
-      const expectedMessage: Message = {
+      const expectedMessage = Message.fromProps({
         author,
         id,
         publishedAt,
-        text: MessageText.of(text),
-      };
+        text,
+      });
 
       const message = await messageRepo.getMessageById(expectedMessage.id);
       expect(message).toEqual(expectedMessage);

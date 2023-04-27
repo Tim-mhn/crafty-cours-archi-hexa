@@ -17,7 +17,7 @@ export class ViewUserMessagesTimelineUseCase {
       authorName
     );
     return allMessages.map((m) => ({
-      text: m.text.value,
+      text: m.text,
       id: m.id,
       publishedAgo: computePublishedAgoLabel({
         currentDate: this.now(),

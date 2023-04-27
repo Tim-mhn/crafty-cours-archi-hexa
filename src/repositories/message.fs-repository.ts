@@ -2,11 +2,9 @@
 import { readFile, writeFile } from "fs/promises";
 import { join } from "path";
 import { MessageRepository } from "./message.repository";
-import { Message } from "../entities";
-import { EditMessageCommand } from "../use-cases/edit-message.use-case";
-import { MessageText } from "../models/message-text";
+import { Message, MessageProps } from "../entities";
 
-export type FileSystemMessage = Record<keyof Message, string>;
+export type FileSystemMessage = Record<keyof MessageProps, string>;
 export class FileSystemMessageRepository implements MessageRepository {
   constructor(private customFilename?: string) {}
   private filename() {
@@ -20,25 +18,13 @@ export class FileSystemMessageRepository implements MessageRepository {
     await this._saveAllMessages(allMessages);
   }
 
-  async editMessageText({
-    messageId,
-    text,
-  }: EditMessageCommand): Promise<void> {
-    const allMessages = await this._getAllMessages();
-    const messageToEdit = allMessages.find((m) => m.id === messageId);
-    messageToEdit.text = MessageText.of(text);
-    await this._saveAllMessages(allMessages);
-  }
-
   private async _saveAllMessages(messages: Message[]): Promise<void> {
-    const fileSystemMessages = messages.map(
-      ({ author, id, publishedAt, text }) => ({
-        author,
-        id,
-        text: text.value,
-        publishedAt,
-      })
-    );
+    const fileSystemMessages = messages.map((m) => ({
+      author: m.author,
+      id: m.id,
+      text: m.text,
+      publishedAt: m.publishedAt,
+    }));
     await writeFile(this.filename(), JSON.stringify(fileSystemMessages));
   }
 
@@ -81,11 +67,11 @@ export class FileSystemMessageRepository implements MessageRepository {
     publishedAt: publishedAtString,
     text,
   }: FileSystemMessage): Message {
-    return {
+    return Message.fromProps({
       author,
       id,
-      text: MessageText.of(text),
+      text,
       publishedAt: new Date(publishedAtString),
-    };
+    });
   }
 }

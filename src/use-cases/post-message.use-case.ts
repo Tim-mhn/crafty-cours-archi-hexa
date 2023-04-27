@@ -1,5 +1,4 @@
 import { Message } from "../entities";
-import { MessageText } from "../models/message-text";
 import { MessageRepository } from "../repositories/message.repository";
 
 export type PostMessageCommand = { id: string; text: string; author: string };
@@ -15,12 +14,12 @@ export class PostMessageUseCase {
   ) {}
 
   async handle({ author, id, text }: PostMessageCommand) {
-    const message: Message = {
+    const message = Message.fromProps({
       author,
       id,
-      text: MessageText.of(text),
+      text,
       publishedAt: this.dateProvider.getCurrentDate(),
-    };
+    });
     await this.messageRepository.saveMessage(message);
   }
 }
