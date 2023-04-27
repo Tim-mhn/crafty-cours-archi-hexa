@@ -1,12 +1,12 @@
 import { Message, TimelineMessage } from "../entities";
 import { InMemoryMessageRepository } from "../repositories/message.in-memory.repository";
-import { ViewUserMessagesTimelineUseCase } from "../use-cases/view-user-messages-timeline.use-case";
+import { ViewUserMessagesTimelineUseCase } from "../utils/view-user-messages-timeline.use-case";
 
 describe("View Messages Timeline", () => {
-  let testFixture: TestFixture;
+  let testFixture: ViewMessageTestFixture;
 
   beforeEach(() => {
-    testFixture = new TestFixture();
+    testFixture = new ViewMessageTestFixture();
   });
   describe("Feature: the user only sees the messages they posted", () => {
     it("alice should only see the 2 messages she posted", async () => {
@@ -50,28 +50,28 @@ describe("View Messages Timeline", () => {
 
   describe("Feature: the 'publishedAgo' label", () => {
     it("should show '1 minute ago' if the message was published 1 minute ago, and '10 minutes' ago if published 10 minutes ago", async () => {
-      testFixture.givenAllMessagesPostedAre([
-        {
-          text: "Hello world",
-          publishedAt: new Date("2023-04-26T21:00:00.00Z"),
-          author: "alice",
-          id: "message-1",
-        },
-        {
-          text: "This is bob",
-          publishedAt: new Date("2023-04-26T21:05:00.00Z"),
-          author: "bob",
-          id: "message-2",
-        },
-        {
-          text: "How are you ?",
-          publishedAt: new Date("2023-04-26T21:09:00.00Z"),
-          author: "alice",
-          id: "message-3",
-        },
-      ]);
-
-      testFixture.givenCurrentDateIs(new Date("2023-04-26T21:10:00.00Z"));
+      testFixture
+        .givenAllMessagesPostedAre([
+          {
+            text: "Hello world",
+            publishedAt: new Date("2023-04-26T21:00:00.00Z"),
+            author: "alice",
+            id: "message-1",
+          },
+          {
+            text: "This is bob",
+            publishedAt: new Date("2023-04-26T21:05:00.00Z"),
+            author: "bob",
+            id: "message-2",
+          },
+          {
+            text: "How are you ?",
+            publishedAt: new Date("2023-04-26T21:09:00.00Z"),
+            author: "alice",
+            id: "message-3",
+          },
+        ])
+        .givenCurrentDateIs(new Date("2023-04-26T21:10:00.00Z"));
 
       await testFixture.whenUserSeesMessagesTimeLineOf("alice");
 
@@ -90,16 +90,16 @@ describe("View Messages Timeline", () => {
     });
 
     it("should show 'now' if the message was published less than 1 minute before the current date", async () => {
-      testFixture.givenAllMessagesPostedAre([
-        {
-          text: "hey",
-          publishedAt: new Date("2023-04-26T21:09:45.00Z"),
-          author: "alice",
-          id: "message-1",
-        },
-      ]);
-
-      testFixture.givenCurrentDateIs(new Date("2023-04-26T21:10:00.00Z"));
+      testFixture
+        .givenAllMessagesPostedAre([
+          {
+            text: "hey",
+            publishedAt: new Date("2023-04-26T21:09:45.00Z"),
+            author: "alice",
+            id: "message-1",
+          },
+        ])
+        .givenCurrentDateIs(new Date("2023-04-26T21:10:00.00Z"));
 
       await testFixture.whenUserSeesMessagesTimeLineOf("alice");
 
@@ -114,7 +114,7 @@ describe("View Messages Timeline", () => {
   });
 });
 
-class TestFixture {
+class ViewMessageTestFixture {
   now: Date;
 
   timelineMessages: TimelineMessage[];
@@ -131,9 +131,11 @@ class TestFixture {
 
   givenCurrentDateIs(currentDate) {
     this.now = currentDate;
+    return this;
   }
   givenAllMessagesPostedAre(messages: Message[]) {
     this.inMemoryMessagesRepository.messages = messages;
+    return this;
   }
 
   async whenUserSeesMessagesTimeLineOf(user: string) {

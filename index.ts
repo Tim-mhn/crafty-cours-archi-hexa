@@ -4,8 +4,13 @@ import {
   DateProvider,
   PostMessageCommand,
   PostMessageUseCase,
-} from "./post-message.use-case";
-import { FileSystemMessageRepository } from "./repositories/message.fs-repository";
+} from "./src/use-cases/post-message.use-case";
+import { FileSystemMessageRepository } from "./src/repositories/message.fs-repository";
+import { ViewUserMessagesTimelineUseCase } from "./src/utils/view-user-messages-timeline.use-case";
+import {
+  EditMessageCommand,
+  EditMessageUseCase,
+} from "./src/use-cases/edit-message.use-case";
 
 const program = new Command();
 
@@ -20,6 +25,13 @@ const postMessageUseCase = new PostMessageUseCase(
   messageRepository
 );
 
+const viewUserMessagesTimelineUseCase = new ViewUserMessagesTimelineUseCase(
+  new RealDateProvider(),
+  messageRepository
+);
+
+const editMessageUseCase = new EditMessageUseCase(messageRepository);
+
 program
   .version("1.0.0")
   .description("Social network crafty")
@@ -31,7 +43,7 @@ program
         const postMessageCommand: PostMessageCommand = {
           author: user,
           text: message,
-          id: "message-id",
+          id: Math.floor(Math.random() * 1e9).toString(),
         };
 
         try {
@@ -39,6 +51,40 @@ program
           //   console.table([messageRepository.message]);
         } catch (err) {
           console.error("Error :", (err as Error).stack);
+        }
+      })
+  )
+  .addCommand(
+    new Command("view").argument("<user>", "user").action(async (user) => {
+      try {
+        const timeline = await viewUserMessagesTimelineUseCase.execute(
+          user as string
+        );
+        console.table(timeline);
+        process.exit(0);
+      } catch (err) {
+        console.error(err);
+        process.exit(1);
+      }
+    })
+  )
+  .addCommand(
+    new Command("edit")
+      .argument("<messageId>", "message id")
+      .argument("<text>", "new text")
+      .action(async (messageId, text) => {
+        const editMessageCommand: EditMessageCommand = {
+          messageId,
+          text,
+        };
+
+        try {
+          await editMessageUseCase.handle(editMessageCommand);
+
+          process.exit(0);
+        } catch (err) {
+          console.error(err);
+          process.exit(1);
         }
       })
   );

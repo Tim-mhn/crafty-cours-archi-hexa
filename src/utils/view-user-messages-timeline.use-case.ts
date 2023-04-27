@@ -1,9 +1,9 @@
 import { TimelineMessage } from "../entities";
 import { MessageRepository } from "../repositories/message.repository";
-import { DateProvider } from "./post-message.use-case";
+import { DateProvider } from "../use-cases/post-message.use-case";
 
 export class ViewUserMessagesTimelineUseCase {
-  private get now() {
+  private now() {
     return this.dateProvider.getCurrentDate();
   }
 
@@ -20,7 +20,7 @@ export class ViewUserMessagesTimelineUseCase {
       text: m.text,
       id: m.id,
       publishedAgo: computePublishedAgoLabel({
-        currentDate: this.now,
+        currentDate: this.now(),
         messagePublishedAt: m.publishedAt,
       }),
     }));

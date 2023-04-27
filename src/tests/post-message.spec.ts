@@ -1,12 +1,15 @@
 import { Message } from "../entities";
+import {
+  EmptyMessageForbidden,
+  MessageTooLong,
+} from "../errors/post-message.errors";
 import { InMemoryMessageRepository } from "../repositories/message.in-memory.repository";
 import {
   DateProvider,
-  EmptyMessageForbidden,
-  MessageTooLong,
   PostMessageCommand,
   PostMessageUseCase,
 } from "../use-cases/post-message.use-case";
+import { messageBuilder } from "./message.builder";
 
 describe("Feature: posting a message", () => {
   let testFixture: ReturnType<typeof createTestFixture>;
@@ -18,11 +21,12 @@ describe("Feature: posting a message", () => {
     it("Alice can post a message on her timeline", async () => {
       testFixture.givenNowIs(new Date("2023-01-19T18:00:00.000Z"));
 
-      await testFixture.whenUserPostsMessage({
-        id: "message-id",
-        text: "Hello",
-        author: "Alice",
-      });
+      const message = messageBuilder()
+        .authoredBy("Alice")
+        .withId("message-id")
+        .withText("Hello")
+        .build();
+      await testFixture.whenUserPostsMessage(message);
 
       testFixture.thenPostedMessageShouldBe({
         id: "message-id",
@@ -55,11 +59,8 @@ describe("Feature: posting a message", () => {
 
       testFixture.givenNowIs(new Date("2023-01-19T18:00:00.000Z"));
 
-      await testFixture.whenUserPostsMessage({
-        id: "message-2",
-        text: "",
-        author: "Alice",
-      });
+      const message = messageBuilder().withText("").build();
+      await testFixture.whenUserPostsMessage(message);
 
       testFixture.thenShouldThrowError(EmptyMessageForbidden);
     });
@@ -69,11 +70,8 @@ describe("Feature: posting a message", () => {
 
       testFixture.givenNowIs(new Date("2023-01-19T18:00:00.000Z"));
 
-      await testFixture.whenUserPostsMessage({
-        id: "message-2",
-        text: "           ",
-        author: "Alice",
-      });
+      const message = messageBuilder().withText("            ").build();
+      await testFixture.whenUserPostsMessage(message);
 
       testFixture.thenShouldThrowError(EmptyMessageForbidden);
     });
