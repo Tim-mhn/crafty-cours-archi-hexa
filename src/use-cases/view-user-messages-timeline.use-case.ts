@@ -1,6 +1,6 @@
 import { TimelineMessage } from "../entities";
 import { MessageRepository } from "../repositories/message.repository";
-import { DateProvider } from "../use-cases/post-message.use-case";
+import { DateProvider } from "./post-message.use-case";
 
 export class ViewUserMessagesTimelineUseCase {
   private now() {
@@ -17,7 +17,7 @@ export class ViewUserMessagesTimelineUseCase {
       authorName
     );
     return allMessages.map((m) => ({
-      text: m.text,
+      text: m.text.value,
       id: m.id,
       publishedAgo: computePublishedAgoLabel({
         currentDate: this.now(),

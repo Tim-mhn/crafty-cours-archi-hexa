@@ -4,17 +4,20 @@ import { join } from "path";
 import { MessageRepository } from "./message.repository";
 import { Message } from "../entities";
 import { EditMessageCommand } from "../use-cases/edit-message.use-case";
+import { MessageText } from "../models/message-text";
 
-type FileSystemMessage = Record<keyof Message, string>;
+export type FileSystemMessage = Record<keyof Message, string>;
 export class FileSystemMessageRepository implements MessageRepository {
+  constructor(private customFilename?: string) {}
   private filename() {
+    if (this.customFilename) return this.customFilename;
     const filename = join(__dirname, "messages.json");
     return filename;
   }
   async saveMessage(message: Message): Promise<void> {
     const allMessages = await this._getAllMessages();
     allMessages.push(message);
-    this._saveAllMessages(allMessages);
+    await this._saveAllMessages(allMessages);
   }
 
   async editMessageText({
@@ -23,17 +26,30 @@ export class FileSystemMessageRepository implements MessageRepository {
   }: EditMessageCommand): Promise<void> {
     const allMessages = await this._getAllMessages();
     const messageToEdit = allMessages.find((m) => m.id === messageId);
-    messageToEdit.text = text;
+    messageToEdit.text = MessageText.of(text);
     await this._saveAllMessages(allMessages);
   }
 
   private async _saveAllMessages(messages: Message[]): Promise<void> {
-    await writeFile(this.filename(), JSON.stringify(messages));
+    const fileSystemMessages = messages.map(
+      ({ author, id, publishedAt, text }) => ({
+        author,
+        id,
+        text: text.value,
+        publishedAt,
+      })
+    );
+    await writeFile(this.filename(), JSON.stringify(fileSystemMessages));
   }
 
   async getAllMessagesOfUser(user: string) {
     const allMessages = await this._getAllMessages();
     return allMessages.filter((m) => m.author === user);
+  }
+
+  async getMessageById(messageId: string): Promise<Message> {
+    const allMessages = await this._getAllMessages();
+    return allMessages.find((m) => m.id === messageId);
   }
 
   private async _getAllMessages(): Promise<Message[]> {
@@ -68,7 +84,7 @@ export class FileSystemMessageRepository implements MessageRepository {
     return {
       author,
       id,
-      text,
+      text: MessageText.of(text),
       publishedAt: new Date(publishedAtString),
     };
   }

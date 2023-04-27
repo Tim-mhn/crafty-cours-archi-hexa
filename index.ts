@@ -6,7 +6,7 @@ import {
   PostMessageUseCase,
 } from "./src/use-cases/post-message.use-case";
 import { FileSystemMessageRepository } from "./src/repositories/message.fs-repository";
-import { ViewUserMessagesTimelineUseCase } from "./src/utils/view-user-messages-timeline.use-case";
+import { ViewUserMessagesTimelineUseCase } from "./src/use-cases/view-user-messages-timeline.use-case";
 import {
   EditMessageCommand,
   EditMessageUseCase,

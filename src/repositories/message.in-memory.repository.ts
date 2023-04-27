@@ -1,4 +1,5 @@
 import { Message } from "../entities";
+import { MessageText } from "../models/message-text";
 import { MessageRepository } from "./message.repository";
 
 export class InMemoryMessageRepository implements MessageRepository {
@@ -11,7 +12,7 @@ export class InMemoryMessageRepository implements MessageRepository {
     return this.messages.filter((m) => m.author === user);
   }
 
-  getMessageById(messageId: string) {
+  async getMessageById(messageId: string) {
     return this.messages.find((m) => m.id === messageId);
   }
 
@@ -22,7 +23,7 @@ export class InMemoryMessageRepository implements MessageRepository {
     messageId: string;
     text: string;
   }): Promise<void> {
-    const message = this.getMessageById(messageId);
-    message.text = text;
+    const message = await this.getMessageById(messageId);
+    message.text = MessageText.of(text);
   }
 }

@@ -1,6 +1,5 @@
-import { EmptyMessageForbidden } from "../errors/post-message.errors";
+import { MessageText } from "../models/message-text";
 import { MessageRepository } from "../repositories/message.repository";
-import { checkTextIsValidOrThrow } from "./text.validator";
 
 export type EditMessageCommand = {
   messageId: string;
@@ -9,7 +8,8 @@ export type EditMessageCommand = {
 export class EditMessageUseCase {
   constructor(private messageRepository: MessageRepository) {}
   async handle({ messageId, text }: EditMessageCommand) {
-    checkTextIsValidOrThrow({ text });
-    await this.messageRepository.editMessageText({ messageId, text });
+    const message = await this.messageRepository.getMessageById(messageId);
+    message.text = MessageText.of(text);
+    await this.messageRepository.saveMessage(message);
   }
 }

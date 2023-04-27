@@ -1,6 +1,8 @@
+import { MessageText } from "../models/message-text";
+
 export type Message = {
   id: string;
-  text: string;
+  text: MessageText;
   author: string;
   publishedAt: Date;
 };

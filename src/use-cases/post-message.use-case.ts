@@ -1,6 +1,6 @@
 import { Message } from "../entities";
+import { MessageText } from "../models/message-text";
 import { MessageRepository } from "../repositories/message.repository";
-import { checkTextIsValidOrThrow } from "./text.validator";
 
 export type PostMessageCommand = { id: string; text: string; author: string };
 
@@ -15,11 +15,10 @@ export class PostMessageUseCase {
   ) {}
 
   async handle({ author, id, text }: PostMessageCommand) {
-    checkTextIsValidOrThrow({ text });
     const message: Message = {
       author,
       id,
-      text,
+      text: MessageText.of(text),
       publishedAt: this.dateProvider.getCurrentDate(),
     };
     await this.messageRepository.saveMessage(message);

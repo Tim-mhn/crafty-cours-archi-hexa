@@ -3,13 +3,13 @@ import {
   EmptyMessageForbidden,
   MessageTooLong,
 } from "../errors/post-message.errors";
+import { MessageText } from "../models/message-text";
 import { InMemoryMessageRepository } from "../repositories/message.in-memory.repository";
 import {
   DateProvider,
   PostMessageCommand,
   PostMessageUseCase,
 } from "../use-cases/post-message.use-case";
-import { messageBuilder } from "./message.builder";
 
 describe("Feature: posting a message", () => {
   let testFixture: ReturnType<typeof createTestFixture>;
@@ -21,17 +21,17 @@ describe("Feature: posting a message", () => {
     it("Alice can post a message on her timeline", async () => {
       testFixture.givenNowIs(new Date("2023-01-19T18:00:00.000Z"));
 
-      const message = messageBuilder()
-        .authoredBy("Alice")
-        .withId("message-id")
-        .withText("Hello")
-        .build();
-      await testFixture.whenUserPostsMessage(message);
+      const postMessageCommand: PostMessageCommand = {
+        author: "alice",
+        text: "Hello",
+        id: "message-id",
+      };
+      await testFixture.whenUserPostsMessage(postMessageCommand);
 
-      testFixture.thenPostedMessageShouldBe({
+      await testFixture.thenPostedMessageShouldBe({
         id: "message-id",
         text: "Hello",
-        author: "Alice",
+        author: "alice",
         publishedAt: new Date("2023-01-19T18:00:00.000Z"),
       });
     });
@@ -59,7 +59,11 @@ describe("Feature: posting a message", () => {
 
       testFixture.givenNowIs(new Date("2023-01-19T18:00:00.000Z"));
 
-      const message = messageBuilder().withText("").build();
+      const message: PostMessageCommand = {
+        author: "",
+        id: "message-id",
+        text: "",
+      };
       await testFixture.whenUserPostsMessage(message);
 
       testFixture.thenShouldThrowError(EmptyMessageForbidden);
@@ -70,7 +74,12 @@ describe("Feature: posting a message", () => {
 
       testFixture.givenNowIs(new Date("2023-01-19T18:00:00.000Z"));
 
-      const message = messageBuilder().withText("            ").build();
+      const message: PostMessageCommand = {
+        author: "",
+        id: "message-id",
+        text: "             ",
+      };
+
       await testFixture.whenUserPostsMessage(message);
 
       testFixture.thenShouldThrowError(EmptyMessageForbidden);
@@ -99,10 +108,19 @@ const createTestFixture = () => {
     thenShouldThrowError: (errorClass: new () => Error) => {
       expect(thrownError).toBeInstanceOf(errorClass);
     },
-    thenPostedMessageShouldBe: (expectedMessage: Message) => {
-      expect(messageRepo.getMessageById(expectedMessage.id)).toEqual(
-        expectedMessage
-      );
+    thenPostedMessageShouldBe: async (
+      _expectedMessage: Omit<Message, "text"> & { text: string }
+    ) => {
+      const { author, id, publishedAt, text } = _expectedMessage;
+      const expectedMessage: Message = {
+        author,
+        id,
+        publishedAt,
+        text: MessageText.of(text),
+      };
+
+      const message = await messageRepo.getMessageById(expectedMessage.id);
+      expect(message).toEqual(expectedMessage);
     },
     givenNowIs: (date: Date) => {
       stubDateProvider.now = date;

@@ -1,7 +1,6 @@
 import { Message } from "../entities";
 import { EmptyMessageForbidden } from "../errors/post-message.errors";
 import { InMemoryMessageRepository } from "../repositories/message.in-memory.repository";
-import { MessageRepository } from "../repositories/message.repository";
 import { EditMessageUseCase } from "../use-cases/edit-message.use-case";
 import { messageBuilder } from "./message.builder";
 
@@ -65,10 +64,9 @@ class EditMessageTestFixture {
   }
 
   async thenMessageShouldBe(expectedMessage: { id: string; text: string }) {
-    const { id, text } = await this.messageRepository.getMessageById(
-      expectedMessage.id
-    );
-    expect({ id, text }).toEqual(expectedMessage);
+    const { id, text: messageText } =
+      await this.messageRepository.getMessageById(expectedMessage.id);
+    expect({ id, text: messageText.value }).toEqual(expectedMessage);
   }
 
   errorThrown: Error;

@@ -1,6 +1,7 @@
 import { Message } from "../entities";
+import { MessageText } from "../models/message-text";
 
-const DEFAULT_MESSAGE_PROPS: Message = {
+const DEFAULT_MESSAGE_PROPS: Omit<Message, "text"> & { text: string } = {
   author: "default author",
   text: "default message text",
   id: "default-msg-id",
@@ -42,7 +43,12 @@ export const messageBuilder = ({
     },
 
     build(): Message {
-      return { ...props };
+      return {
+        author: props.author,
+        id: props.id,
+        publishedAt: props.publishedAt,
+        text: MessageText.of(props.text),
+      };
     },
   };
 };
