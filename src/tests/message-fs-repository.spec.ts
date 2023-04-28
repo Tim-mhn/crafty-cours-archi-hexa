@@ -20,14 +20,6 @@ describe("FileSystemMessageRepository", () => {
     }
   });
 
-  //   afterAll(async () => {
-  //     try {
-  //       await writeFile(testMessageFilePath, JSON.stringify([]));
-  //     } catch (err) {
-  //       console.error(err);
-  //     }
-  //   });
-
   describe("saveMessage", () => {
     it("should save a message in the file system", async () => {
       await fsMessageRepo.saveMessage(

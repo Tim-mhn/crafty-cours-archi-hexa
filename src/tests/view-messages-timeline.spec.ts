@@ -37,11 +37,11 @@ describe("View Messages Timeline", () => {
       testFixture.thenMessagesSeenTextAre([
         {
           text: "Hello world",
-          id: "message-1",
+          author: "alice",
         },
         {
           text: "How are you ?",
-          id: "message-3",
+          author: "alice",
         },
       ]);
     });
@@ -76,14 +76,14 @@ describe("View Messages Timeline", () => {
 
       testFixture.thenMessagesSeenAreExactly([
         {
-          text: "Hello world",
-          publishedAgo: "10 minutes ago",
-          id: "message-1",
-        },
-        {
           text: "How are you ?",
           publishedAgo: "1 minute ago",
-          id: "message-3",
+          author: "alice",
+        },
+        {
+          text: "Hello world",
+          publishedAgo: "10 minutes ago",
+          author: "alice",
         },
       ]);
     });
@@ -106,19 +106,23 @@ describe("View Messages Timeline", () => {
         {
           text: "hey",
           publishedAgo: "now",
-          id: "message-1",
+          author: "alice",
         },
       ]);
     });
   });
 });
 
-class ViewMessageTestFixture {
+export class ViewMessageTestFixture {
   now: Date;
 
   timelineMessages: TimelineMessage[];
 
   inMemoryMessagesRepository = new InMemoryMessageRepository();
+
+  public get messageRepository() {
+    return this.inMemoryMessagesRepository;
+  }
 
   dateProvider = {
     getCurrentDate: () => this.now,
@@ -142,19 +146,13 @@ class ViewMessageTestFixture {
       user
     );
   }
-  thenMessagesSeenTextAre(messagesSeen: { text: string; id: string }[]) {
-    expect(this.timelineMessages.map(({ text, id }) => ({ text, id }))).toEqual(
-      messagesSeen
-    );
+  thenMessagesSeenTextAre(messagesSeen: { text: string; author: string }[]) {
+    expect(
+      this.timelineMessages.map(({ text, author }) => ({ text, author }))
+    ).toEqual(messagesSeen);
   }
 
-  thenMessagesSeenAreExactly(
-    messagesSeen: {
-      text: string;
-      publishedAgo: string;
-      id: string;
-    }[]
-  ) {
+  thenMessagesSeenAreExactly(messagesSeen: TimelineMessage[]) {
     expect(this.timelineMessages).toEqual(messagesSeen);
   }
 }

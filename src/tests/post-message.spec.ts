@@ -8,7 +8,7 @@ import {
   PostMessageCommand,
   PostMessageUseCase,
 } from "../application/use-cases/post-message.use-case";
-import { DateProvider } from "../application/providers/date.provider";
+import { StubDateProvider } from "./stub.date-provider";
 
 describe("Feature: posting a message", () => {
   let testFixture: ReturnType<typeof createTestFixture>;
@@ -87,14 +87,6 @@ describe("Feature: posting a message", () => {
     });
   });
 });
-
-class StubDateProvider implements DateProvider {
-  now: Date;
-
-  getCurrentDate() {
-    return this.now;
-  }
-}
 
 const createTestFixture = () => {
   const stubDateProvider = new StubDateProvider();

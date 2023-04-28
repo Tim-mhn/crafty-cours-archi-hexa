@@ -11,7 +11,8 @@ import {
   EditMessageUseCase,
 } from "./src/application/use-cases/edit-message.use-case";
 import { DateProvider } from "./src/application/providers/date.provider";
-
+import { FileSystemUserFollowersRepository } from "./src/infrastructure/repositories/user-followers.fs.repository";
+import { FollowUserUseCase } from "./src/application/use-cases/follow-user.use-case";
 const program = new Command();
 
 const messageRepository = new FileSystemMessageRepository();
@@ -32,6 +33,9 @@ const viewUserMessagesTimelineUseCase = new ViewUserMessagesTimelineUseCase(
 
 const editMessageUseCase = new EditMessageUseCase(messageRepository);
 
+const fsUserFollowersRepository = new FileSystemUserFollowersRepository();
+const followUserUseCase = new FollowUserUseCase(fsUserFollowersRepository);
+
 program
   .version("1.0.0")
   .description("Social network crafty")
@@ -48,7 +52,6 @@ program
 
         try {
           postMessageUseCase.handle(postMessageCommand);
-          //   console.table([messageRepository.message]);
         } catch (err) {
           console.error("Error :", (err as Error).stack);
         }
@@ -56,16 +59,14 @@ program
   )
   .addCommand(
     new Command("view").argument("<user>", "user").action(async (user) => {
-      try {
+      const run = async () => {
         const timeline = await viewUserMessagesTimelineUseCase.execute(
           user as string
         );
         console.table(timeline);
-        process.exit(0);
-      } catch (err) {
-        console.error(err);
-        process.exit(1);
-      }
+      };
+
+      runAndExitProcessBasedOnError(run);
     })
   )
   .addCommand(
@@ -78,16 +79,31 @@ program
           text,
         };
 
-        try {
-          await editMessageUseCase.handle(editMessageCommand);
-
-          process.exit(0);
-        } catch (err) {
-          console.error(err);
-          process.exit(1);
-        }
+        runAndExitProcessBasedOnError(() =>
+          editMessageUseCase.handle(editMessageCommand)
+        );
+      })
+  )
+  .addCommand(
+    new Command("follow")
+      .argument("<user>", "user")
+      .argument("<follow>", "user to follow")
+      .action(async (user, followee) => {
+        runAndExitProcessBasedOnError(() =>
+          followUserUseCase.handle({ user, userToFollow: followee })
+        );
       })
   );
+
+async function runAndExitProcessBasedOnError(fn: () => Promise<void>) {
+  try {
+    await fn();
+    process.exit(0);
+  } catch (err) {
+    console.error(err);
+    process.exit(1);
+  }
+}
 
 async function main() {
   await program.parseAsync();

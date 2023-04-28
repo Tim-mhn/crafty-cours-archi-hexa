@@ -12,6 +12,6 @@ export class InMemoryMessageRepository implements MessageRepository {
   }
 
   async getMessageById(messageId: string) {
-    return this.messages.find((m) => m.id === messageId);
+    return this.messages.find((m) => m.id === messageId) as Message;
   }
 }
