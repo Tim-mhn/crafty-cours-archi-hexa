@@ -1,2 +1,2 @@
 export * from "./message";
-export * from "./timeline-message";
+export * from "../models/timeline-message";

@@ -1,5 +1,5 @@
 import { Message } from "./message";
-import { TimelineMessage } from "./timeline-message";
+import { TimelineMessage } from "../models/timeline-message";
 
 export class Timeline {
   constructor(
