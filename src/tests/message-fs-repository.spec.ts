@@ -3,7 +3,7 @@ import * as path from "path";
 import {
   FileSystemMessage,
   FileSystemMessageRepository,
-} from "../repositories/message.fs-repository";
+} from "../infrastructure/repositories/message.fs-repository";
 import { messageBuilder } from "./message.builder";
 
 const testMessageFilePath = path.join(__dirname, "./messages-test.json");

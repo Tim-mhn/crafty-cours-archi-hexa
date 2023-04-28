@@ -1,14 +1,14 @@
-import { Message } from "../entities";
+import { Message } from "../domain/entities";
 import {
   EmptyMessageForbidden,
   MessageTooLong,
-} from "../errors/post-message.errors";
-import { InMemoryMessageRepository } from "../repositories/message.in-memory.repository";
+} from "../domain/errors/post-message.errors";
+import { InMemoryMessageRepository } from "../infrastructure/repositories/message.in-memory.repository";
 import {
-  DateProvider,
   PostMessageCommand,
   PostMessageUseCase,
-} from "../use-cases/post-message.use-case";
+} from "../application/use-cases/post-message.use-case";
+import { DateProvider } from "../application/providers/date.provider";
 
 describe("Feature: posting a message", () => {
   let testFixture: ReturnType<typeof createTestFixture>;

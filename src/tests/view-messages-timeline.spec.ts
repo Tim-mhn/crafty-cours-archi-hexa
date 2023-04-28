@@ -1,6 +1,6 @@
-import { Message, TimelineMessage } from "../entities";
-import { InMemoryMessageRepository } from "../repositories/message.in-memory.repository";
-import { ViewUserMessagesTimelineUseCase } from "../use-cases/view-user-messages-timeline.use-case";
+import { Message, TimelineMessage } from "../domain/entities";
+import { InMemoryMessageRepository } from "../infrastructure/repositories/message.in-memory.repository";
+import { ViewUserMessagesTimelineUseCase } from "../application/use-cases/view-user-messages-timeline.use-case";
 import { messageBuilder } from "./message.builder";
 
 describe("View Messages Timeline", () => {

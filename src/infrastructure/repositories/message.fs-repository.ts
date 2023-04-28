@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { readFile, writeFile } from "fs/promises";
 import { join } from "path";
-import { MessageRepository } from "./message.repository";
-import { Message, MessageProps } from "../entities";
+import { MessageRepository } from "../../application/repositories/message.repository";
+import { Message, MessageProps } from "../../domain/entities";
 
 export type FileSystemMessage = Record<keyof MessageProps, string>;
 export class FileSystemMessageRepository implements MessageRepository {

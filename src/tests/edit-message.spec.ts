@@ -1,7 +1,7 @@
-import { Message } from "../entities";
-import { EmptyMessageForbidden } from "../errors/post-message.errors";
-import { InMemoryMessageRepository } from "../repositories/message.in-memory.repository";
-import { EditMessageUseCase } from "../use-cases/edit-message.use-case";
+import { Message } from "../domain/entities";
+import { EmptyMessageForbidden } from "../domain/errors/post-message.errors";
+import { InMemoryMessageRepository } from "../infrastructure/repositories/message.in-memory.repository";
+import { EditMessageUseCase } from "../application/use-cases/edit-message.use-case";
 import { messageBuilder } from "./message.builder";
 
 describe("Feature: edit a message already posted", () => {

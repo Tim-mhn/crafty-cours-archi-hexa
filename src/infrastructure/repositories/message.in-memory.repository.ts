@@ -1,5 +1,5 @@
-import { Message } from "../entities";
-import { MessageRepository } from "./message.repository";
+import { Message } from "../../domain/entities";
+import { MessageRepository } from "../../application/repositories/message.repository";
 
 export class InMemoryMessageRepository implements MessageRepository {
   messages: Message[] = [];

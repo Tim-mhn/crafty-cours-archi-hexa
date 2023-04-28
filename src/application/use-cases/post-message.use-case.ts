@@ -1,11 +1,8 @@
-import { Message } from "../entities";
+import { Message } from "../../domain/entities";
+import { DateProvider } from "../providers/date.provider";
 import { MessageRepository } from "../repositories/message.repository";
 
 export type PostMessageCommand = { id: string; text: string; author: string };
-
-export interface DateProvider {
-  getCurrentDate(): Date;
-}
 
 export class PostMessageUseCase {
   constructor(

@@ -1,16 +1,16 @@
 #!/usr/bin/env node
 import { Command } from "commander";
 import {
-  DateProvider,
   PostMessageCommand,
   PostMessageUseCase,
-} from "./src/use-cases/post-message.use-case";
-import { FileSystemMessageRepository } from "./src/repositories/message.fs-repository";
-import { ViewUserMessagesTimelineUseCase } from "./src/use-cases/view-user-messages-timeline.use-case";
+} from "./src/application/use-cases/post-message.use-case";
+import { FileSystemMessageRepository } from "./src/infrastructure/repositories/message.fs-repository";
+import { ViewUserMessagesTimelineUseCase } from "./src/application/use-cases/view-user-messages-timeline.use-case";
 import {
   EditMessageCommand,
   EditMessageUseCase,
-} from "./src/use-cases/edit-message.use-case";
+} from "./src/application/use-cases/edit-message.use-case";
+import { DateProvider } from "./src/application/providers/date.provider";
 
 const program = new Command();
 

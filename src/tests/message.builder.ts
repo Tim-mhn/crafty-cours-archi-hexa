@@ -1,4 +1,4 @@
-import { Message, MessageProps } from "../entities";
+import { Message, MessageProps } from "../domain/entities";
 
 const DEFAULT_MESSAGE_PROPS: MessageProps = {
   author: "default author",

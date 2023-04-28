@@ -1,6 +1,6 @@
-import { TimelineMessage } from "../entities";
+import { TimelineMessage } from "../../domain/entities";
+import { DateProvider } from "../providers/date.provider";
 import { MessageRepository } from "../repositories/message.repository";
-import { DateProvider } from "./post-message.use-case";
 
 export class ViewUserMessagesTimelineUseCase {
   private now() {

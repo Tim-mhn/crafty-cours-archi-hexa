@@ -12,5 +12,5 @@
     "sourceMap": false,
     "outDir": "dist"
   },
-  "include": ["./src", "index.ts"]
+  "include": ["index.ts"]
 }

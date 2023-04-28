@@ -1,4 +1,4 @@
-import { Message } from "../entities";
+import { Message } from "../../domain/entities";
 
 export interface MessageRepository {
   saveMessage(message: Message): Promise<void>;
