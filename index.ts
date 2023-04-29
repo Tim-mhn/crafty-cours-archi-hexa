@@ -13,6 +13,8 @@ import {
 import { DateProvider } from "./src/application/providers/date.provider";
 import { FileSystemUserFollowersRepository } from "./src/infrastructure/repositories/user-followers.fs.repository";
 import { FollowUserUseCase } from "./src/application/use-cases/follow-user.use-case";
+import { ViewMessagesWallOfUserUseCase } from "./src/application/use-cases/view-wall.use-case";
+
 const program = new Command();
 
 const messageRepository = new FileSystemMessageRepository();
@@ -35,6 +37,12 @@ const editMessageUseCase = new EditMessageUseCase(messageRepository);
 
 const fsUserFollowersRepository = new FileSystemUserFollowersRepository();
 const followUserUseCase = new FollowUserUseCase(fsUserFollowersRepository);
+
+const viewUserWallUseCase = new ViewMessagesWallOfUserUseCase(
+  messageRepository,
+  fsUserFollowersRepository,
+  new RealDateProvider()
+);
 
 program
   .version("1.0.0")
@@ -93,6 +101,16 @@ program
           followUserUseCase.handle({ user, userToFollow: followee })
         );
       })
+  )
+  .addCommand(
+    new Command("wall").argument("<user>", "user").action(async (user) => {
+      const run = async () => {
+        const userWall = await viewUserWallUseCase.handle(user);
+        console.table(userWall);
+      };
+
+      runAndExitProcessBasedOnError(run);
+    })
   );
 
 async function runAndExitProcessBasedOnError(fn: () => Promise<void>) {
