@@ -15,16 +15,7 @@ describe("PrismaMessageRepository ", () => {
   let repository: PrismaMessageRepository;
 
   beforeAll(async () => {
-    container = await new PostgreSqlContainer()
-      //   .withDatabase("crafty-test")
-      //   .withUser("crafty-test")
-      //   .withPassword("crafty-test")
-      //   .withExposedPorts(5432)
-      .start();
-
-    // const databaseUri = `postgresql://crafty-test:crafty-test@${container.getHost()}:${container.getMappedPort(
-    //   5432
-    // )}/crafty-test?schema=public`;
+    container = await new PostgreSqlContainer().start();
 
     const databaseUri = container.getConnectionUri();
 
