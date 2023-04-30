@@ -148,8 +148,9 @@ describe("PrismaMessageRepository ", () => {
   describe("getAllMessagesOfUser", () => {
     it("should return all the messages posted by tim, sorted by last published first", async () => {
       const timMessageBuilder = messageBuilder().authoredBy("tim");
+      const aliceMessage = messageBuilder().authoredBy("alice").build();
 
-      const messages = [
+      const timMessages = [
         timMessageBuilder
           .withId("message-id-1")
           .withText("hello")
@@ -166,15 +167,17 @@ describe("PrismaMessageRepository ", () => {
           .publishedAt(new Date("2023-04-01T10:50:00.00Z"))
           .build(),
       ];
-      await repository.saveMessage(messages[0]);
+      await repository.saveMessage(timMessages[0]);
 
-      await repository.saveMessage(messages[1]);
+      await repository.saveMessage(timMessages[1]);
 
-      await repository.saveMessage(messages[2]);
+      await repository.saveMessage(aliceMessage);
+
+      await repository.saveMessage(timMessages[2]);
 
       const retrievedMessages = await repository.getAllMessagesOfUser("tim");
 
-      expect(retrievedMessages).toEqual(messages);
+      expect(retrievedMessages).toEqual(timMessages);
     });
   });
 });
