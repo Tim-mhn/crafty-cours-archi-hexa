@@ -12,5 +12,5 @@
     "sourceMap": false,
     "outDir": "dist"
   },
-  "include": ["index.ts"]
+  "include": ["src/apps/cli.ts"]
 }

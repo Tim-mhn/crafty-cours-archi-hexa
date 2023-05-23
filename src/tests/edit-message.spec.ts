@@ -56,10 +56,9 @@ class EditMessageTestFixture {
     messageId: string;
     text: string;
   }) {
-    try {
-      await this.editMessageUseCase.handle({ messageId, text });
-    } catch (err) {
-      this.errorThrown = err;
+    const res = await this.editMessageUseCase.handle({ messageId, text });
+    if (res.isErr()) {
+      this.errorThrown = res.error;
     }
   }
 

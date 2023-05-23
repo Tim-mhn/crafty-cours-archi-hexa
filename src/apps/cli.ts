@@ -3,21 +3,23 @@ import { Command } from "commander";
 import {
   PostMessageCommand,
   PostMessageUseCase,
-} from "./src/application/use-cases/post-message.use-case";
-import { FileSystemMessageRepository } from "./src/infrastructure/repositories/message.fs-repository";
-import { ViewUserMessagesTimelineUseCase } from "./src/application/use-cases/view-user-messages-timeline.use-case";
+} from "../application/use-cases/post-message.use-case";
+import { ViewUserMessagesTimelineUseCase } from "../application/use-cases/view-user-messages-timeline.use-case";
 import {
   EditMessageCommand,
   EditMessageUseCase,
-} from "./src/application/use-cases/edit-message.use-case";
-import { DateProvider } from "./src/application/providers/date.provider";
-import { FileSystemUserFollowersRepository } from "./src/infrastructure/repositories/user-followers.fs.repository";
-import { FollowUserUseCase } from "./src/application/use-cases/follow-user.use-case";
-import { ViewMessagesWallOfUserUseCase } from "./src/application/use-cases/view-wall.use-case";
+} from "../application/use-cases/edit-message.use-case";
+import { DateProvider } from "../application/providers/date.provider";
+import { FollowUserUseCase } from "../application/use-cases/follow-user.use-case";
+import { ViewMessagesWallOfUserUseCase } from "../application/use-cases/view-wall.use-case";
+import { PrismaMessageRepository } from "../infrastructure/repositories/message.prisma.repository";
+import { PrismaClient } from "@prisma/client";
+import { PrismaUserFollowersRepository } from "../infrastructure/repositories/user-followers.prisma.repository";
 
 const program = new Command();
 
-const messageRepository = new FileSystemMessageRepository();
+const prismaClient = new PrismaClient();
+const messageRepository = new PrismaMessageRepository(prismaClient);
 class RealDateProvider implements DateProvider {
   getCurrentDate(): Date {
     return new Date();
@@ -35,7 +37,9 @@ const viewUserMessagesTimelineUseCase = new ViewUserMessagesTimelineUseCase(
 
 const editMessageUseCase = new EditMessageUseCase(messageRepository);
 
-const fsUserFollowersRepository = new FileSystemUserFollowersRepository();
+const fsUserFollowersRepository = new PrismaUserFollowersRepository(
+  prismaClient
+);
 const followUserUseCase = new FollowUserUseCase(fsUserFollowersRepository);
 
 const viewUserWallUseCase = new ViewMessagesWallOfUserUseCase(
@@ -51,7 +55,7 @@ program
     new Command("post")
       .argument("<user>", "current user")
       .argument("<message>", "message")
-      .action((user, message) => {
+      .action(async (user, message) => {
         const postMessageCommand: PostMessageCommand = {
           author: user,
           text: message,
@@ -59,7 +63,7 @@ program
         };
 
         try {
-          postMessageUseCase.handle(postMessageCommand);
+          await postMessageUseCase.handle(postMessageCommand);
         } catch (err) {
           console.error("Error :", (err as Error).stack);
         }
@@ -87,18 +91,9 @@ program
           text,
         };
 
-        try {
-          const res = await editMessageUseCase.handle(editMessageCommand);
-          if (res.isOk()) {
-            process.exit(0);
-          }
-
-          console.error(res.error);
-          process.exit(1);
-        } catch (err) {
-          console.error(err);
-          process.exit(1);
-        }
+        runAndExitProcessBasedOnError(() =>
+          editMessageUseCase.handle(editMessageCommand)
+        );
       })
   )
   .addCommand(
